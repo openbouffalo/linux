@@ -179,6 +179,24 @@ config SERIAL_ATMEL_TTYAT
 
 	  Say Y if you have an external 8250/16C550 UART.  If unsure, say N.
 
+config SERIAL_BFLB
+	tristate "Bouffalolab serial port support"
+	select SERIAL_CORE
+	depends on COMMON_CLK
+	help
+	  This enables the driver for the Bouffalolab's serial.
+
+config SERIAL_BFLB_CONSOLE
+	bool "Support for console on Bouffalolab serial port"
+	depends on SERIAL_BFLB
+	select SERIAL_CORE_CONSOLE
+	select SERIAL_EARLYCON
+	help
+	  Say Y here if you wish to use a Bouffalolab UART as the
+	  system console (the system console is the device which
+	  receives all kernel messages and warnings and which allows
+	  logins in single user mode) as /dev/ttySn.
+
 config SERIAL_KGDB_NMI
 	bool "Serial console over KGDB NMI debugger port"
 	depends on KGDB_SERIAL_CONSOLE

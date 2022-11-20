@@ -276,4 +276,7 @@
 /* Sunplus UART */
 #define PORT_SUNPLUS	123
 
+/* Bouffalolab UART */
+#define PORT_BFLB	124
+
 #endif /* _UAPILINUX_SERIAL_CORE_H */
