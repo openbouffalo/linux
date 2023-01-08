@@ -26,6 +26,20 @@
 		device_type = "memory";
 		reg = <0x50000000 0x04000000>;
 	};
+
+	xip_flash@58500000 {
+		compatible = "mtd-rom";
+		reg = <0x58500000 0x400000>;
+		linux,mtd-name = "xip-flash.0";
+		erase-size = <0x10000>;
+		bank-width = <4>;
+
+		rootfs@0 {
+			label = "rootfs";
+			reg = <0x00000 0x280000>;
+			read-only;
+		};
+	};
 };
 
 &uart0 {
