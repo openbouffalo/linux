@@ -4,6 +4,7 @@
  */
 
 #include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/mailbox/bflb-ipc.h>
 
 / {
 	compatible = "bouffalolab,bl808";
@@ -57,6 +58,19 @@
 			reg = <0x30002000 0x1000>;
 			interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&xtal>;
+			status = "disabled";
+		};
+
+		ipclic: mailbox@30005000 {
+			compatible = "bouffalolab,bflb-ipc";
+			reg = <0x30005000 0x20>,
+			      <0x30005020 0x20>,
+			      <0x2000a800 0x20>,
+			      <0x2000a820 0x20>;
+			interrupts = <54 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-controller;
+			#interrupt-cells = <3>;
+			#mbox-cells = <2>;
 			status = "disabled";
 		};
 
