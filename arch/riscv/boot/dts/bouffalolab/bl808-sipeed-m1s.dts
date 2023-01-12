@@ -46,6 +46,10 @@
 	status = "okay";
 };
 
+&sdhci0 {
+	status = "okay";
+};
+
 &ipclic {
 	status = "okay";
 };

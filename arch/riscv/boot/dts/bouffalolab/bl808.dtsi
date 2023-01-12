@@ -61,6 +61,17 @@
 			status = "disabled";
 		};
 
+		sdhci0: sdhci@20060000 {
+			compatible = "bouffalolab,bflb-sdhci";
+			reg = <0x20060000 0x100>;
+			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
+						       BFLB_IPC_DEVICE_SDHCI
+						       IRQ_TYPE_EDGE_RISING>;
+			mboxes = <&ipclic BFLB_IPC_SOURCE_M0 BFLB_IPC_DEVICE_SDHCI>;
+			clocks = <&xtal>;
+			status = "disabled";
+		};
+
 		ipclic: mailbox@30005000 {
 			compatible = "bouffalolab,bflb-ipc";
 			reg = <0x30005000 0x20>,
