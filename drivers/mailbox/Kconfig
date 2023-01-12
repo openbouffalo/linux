@@ -295,4 +295,13 @@ config QCOM_IPCC
 	  acts as an interrupt controller for receiving interrupts from clients.
 	  Say Y here if you want to build this driver.
 
+config BFLB_IPC
+	tristate "Bouffalo Lab IPC driver"
+	depends on OF
+	help
+	  (IPC) driver for BL808 devices. The driver provides mailbox support for
+	  sending interrupts to the clients. On the other hand, the driver also
+	  acts as an interrupt controller for receiving interrupts from clients.
+	  Say Y here if you want to build this driver.
+
 endif
