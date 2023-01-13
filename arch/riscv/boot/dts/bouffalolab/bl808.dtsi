@@ -90,6 +90,16 @@
 			status = "disabled";
 		};
 
+		ehci0: usb@20072000 {
+			compatible = "generic-ehci";
+			reg = <0x20072010 0x1000>;
+			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
+						       BFLB_IPC_DEVICE_USB
+						       IRQ_TYPE_EDGE_RISING>;
+			clocks = <&xtal>;
+			status = "disabled";
+		};
+
 		ipclic: mailbox@30005000 {
 			compatible = "bouffalolab,bflb-ipc";
 			reg = <0x30005000 0x20>,
