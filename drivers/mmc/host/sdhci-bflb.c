@@ -55,11 +55,7 @@ static const struct sdhci_pltfm_data sdhci_bflb_pdata = {
 	.quirks	= SDHCI_QUIRK_NO_SIMULT_VDD_AND_POWER |
 		  SDHCI_QUIRK_NO_BUSY_IRQ |
 		  SDHCI_QUIRK_BROKEN_TIMEOUT_VAL |
-		  SDHCI_QUIRK_NO_HISPD_BIT |
-		  SDHCI_QUIRK_BROKEN_CARD_DETECTION |
-		  SDHCI_QUIRK_BROKEN_DMA |
-		  SDHCI_QUIRK_BROKEN_ADMA |
-		  SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN,
+		  SDHCI_QUIRK_NO_HISPD_BIT,
 };
 
 static int sdhci_bflb_probe(struct platform_device *pdev)
