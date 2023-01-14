@@ -60,7 +60,18 @@
 			clocks = <&xtal>;
 			status = "disabled";
 		};
-
+		
+		uart1: serial@0x2000AA00 {
+			compatible = "bouffalolab,uart";
+			reg = <0x2000AA00 0x0100>;
+			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
+								BFLB_IPC_DEVICE_UART2
+								IRQ_TYPE_EDGE_RISING>;
+			mboxes = <&ipclic BFLB_IPC_SOURCE_M0 BFLB_IPC_DEVICE_UART2>;
+			clocks = <&xtal>;
+			status = "disabled";
+		};
+		
 		sdhci0: sdhci@20060000 {
 			compatible = "bouffalolab,bflb-sdhci";
 			reg = <0x20060000 0x100>;
