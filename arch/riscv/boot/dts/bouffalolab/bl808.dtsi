@@ -45,6 +45,13 @@
 		#clock-cells = <0>;
 	};
 
+	sdh: sdh-clk {
+		compatible = "fixed-clock";
+		clock-frequency = <96000000>;
+		clock-output-names = "sdh";
+		#clock-cells = <0>;
+	};
+
 	soc {
 		compatible = "simple-bus";
 		ranges;
@@ -79,7 +86,7 @@
 						       BFLB_IPC_DEVICE_SDHCI
 						       IRQ_TYPE_EDGE_RISING>;
 			mboxes = <&ipclic BFLB_IPC_SOURCE_M0 BFLB_IPC_DEVICE_SDHCI>;
-			clocks = <&xtal>;
+			clocks = <&sdh>;
 			status = "disabled";
 		};
 
