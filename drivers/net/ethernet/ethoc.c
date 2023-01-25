@@ -271,14 +271,14 @@ static inline void ethoc_write_bd(struct ethoc *dev, int index,
 static inline void ethoc_enable_irq(struct ethoc *dev, u32 mask)
 {
 	u32 imask = ethoc_read(dev, INT_MASK);
-	imask |= mask;
+	imask &= ~mask;
 	ethoc_write(dev, INT_MASK, imask);
 }
 
 static inline void ethoc_disable_irq(struct ethoc *dev, u32 mask)
 {
 	u32 imask = ethoc_read(dev, INT_MASK);
-	imask &= ~mask;
+	imask |= mask;
 	ethoc_write(dev, INT_MASK, imask);
 }
 
@@ -566,7 +566,7 @@ static irqreturn_t ethoc_interrupt(int irq, void *dev_id)
 	 */
 	mask = ethoc_read(priv, INT_MASK);
 	pending = ethoc_read(priv, INT_SOURCE);
-	pending &= mask;
+	pending &= ~mask;
 
 	if (unlikely(pending == 0))
 		return IRQ_NONE;
