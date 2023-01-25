@@ -52,3 +52,7 @@
 &ehci0 {
 	status = "okay";
 };
+
+&enet0 {
+	status = "okay";
+};
