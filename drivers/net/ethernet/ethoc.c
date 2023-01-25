@@ -1183,7 +1183,7 @@ static int ethoc_probe(struct platform_device *pdev)
 		}
 	}
 	if (eth_clkfreq) {
-		u32 clkdiv = MIIMODER_CLKDIV(eth_clkfreq / 2500000 + 1);
+		u32 clkdiv = MIIMODER_CLKDIV(eth_clkfreq / 1000000 + 1);
 
 		if (!clkdiv)
 			clkdiv = 2;
