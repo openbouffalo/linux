@@ -52,6 +52,13 @@
 		#clock-cells = <0>;
 	};
 
+	enet: enet-clk {
+		compatible = "fixed-clock";
+		clock-frequency = <50000000>;
+		clock-output-names = "enet";
+		#clock-cells = <0>;
+	};
+
 	soc {
 		compatible = "simple-bus";
 		ranges;
@@ -97,6 +104,16 @@
 						       BFLB_IPC_DEVICE_USB
 						       IRQ_TYPE_EDGE_RISING>;
 			clocks = <&xtal>;
+			status = "disabled";
+		};
+
+		enet0: emac@20070000 {
+			compatible = "opencores,ethoc";
+			reg = <0x20070000 0x1000>;
+			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
+						       BFLB_IPC_DEVICE_EMAC
+						       IRQ_TYPE_EDGE_RISING>;
+			clocks = <&enet>;
 			status = "disabled";
 		};
 
