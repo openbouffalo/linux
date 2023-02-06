@@ -34,6 +34,8 @@
 		linux,mtd-name = "xip-flash.0";
 		erase-size = <0x10000>;
 		bank-width = <4>;
+		#address-cells = <1>;
+		#size-cells = <1>;
 	};
 };
 
