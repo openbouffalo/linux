@@ -57,6 +57,7 @@ struct bflb_ipc {
 	struct mbox_controller mboxctlr;
 	int num_chans;
 	int irq;
+	spinlock_t tx_lock
 };
 
 static inline struct bflb_ipc *to_bflb_ipc(struct mbox_controller *mboxctlr)
@@ -168,11 +169,11 @@ static void bflb_mbox_tx_irq_fn(u8 from_cpu, struct bflb_ipc *ipc)
 
 	chan = bflb_mbox_find_chan(ipc, &bflbchan);
 	if (IS_ERR(chan)) {
-		dev_err(ipc->dev, "no channel for EOI signal cpu_id: %d service: %d op: %d Param: %d $$$$$$$$$", bflbchan.cpu_id, bflbchan.service_id, bflbchan.op_id, param);
+		dev_err(ipc->dev, "no channel for EOI signal cpu_id: %d service: %d op: %d Param: %d", bflbchan.cpu_id, bflbchan.service_id, bflbchan.op_id, param);
 		return;
 	}
 
-	dev_dbg(ipc->dev, "Got MBOX EOI Signal cpu: %d service %d op %d Param: %d $$$$$$$$$$$$$$$$$$$$", bflbchan.cpu_id, bflbchan.service_id, bflbchan.op_id, param);
+	dev_dbg(ipc->dev, "Got MBOX EOI Signal cpu: %d service %d op %d Param: %d", bflbchan.cpu_id, bflbchan.service_id, bflbchan.op_id, param);
 
 	/* clear the IPC_REG_ILSLR and IPC_REG_ILSHR */
 	writel(0, ipc->base[2] + IPC_REG_ILSLR);
@@ -300,7 +301,7 @@ static int bflb_ipc_mbox_send_data(struct mbox_chan *chan, void *data)
 #endif
 
 	dev_dbg(ipc->dev, "%s %d: cpu: %d singal: %d op: %d (0x%x) param: %d", __func__, msg->id, mchan->cpu_id, mchan->service_id, mchan->op_id, tmpVal, msg->param);
-
+	spin_lock(&ipc->tx_lock);
 	// /* write our signal number to high register */
 	writel(tmpVal, ipc->base[2] + IPC_REG_ILSHR);
 	// /* write our data to low register */
@@ -308,6 +309,7 @@ static int bflb_ipc_mbox_send_data(struct mbox_chan *chan, void *data)
 
 	/* and now kick the remote processor */
 	writel((1 << BFLB_IPC_DEVICE_MBOX_TX), ipc->base[2] + IPC_REG_ISWR);
+	spin_unlock(&ipc->tx_lock);
 	dev_dbg(ipc->dev, "%s %d: done param: %d", __func__, msg->id, msg->param);
 	return 0;
 }
@@ -426,6 +428,8 @@ static int bflb_ipc_setup_mbox(struct bflb_ipc *ipc,
 //	mboxctlr->txdone_poll = false;
 
 
+	spin_lock(&ipc->tx_lock);
+
 
 	/* clear the IPC_REG_ILSLR and IPC_REG_ILSHR */
 	writel(0, ipc->base[2] + IPC_REG_ILSLR);
@@ -434,6 +438,9 @@ static int bflb_ipc_setup_mbox(struct bflb_ipc *ipc,
 	/* unmask our interupt */
 	writel(BIT(BFLB_IPC_DEVICE_MBOX_TX), ipc->base[1] + IPC_REG_IUSR);
 	writel(BIT(BFLB_IPC_DEVICE_MBOX_RX), ipc->base[1] + IPC_REG_IUSR);
+
+	spin_unlock(&ipc->tx_lock);
+
 
 	return devm_mbox_controller_register(dev, mboxctlr);
 }
@@ -479,6 +486,9 @@ static int bflb_ipc_probe(struct platform_device *pdev)
 	ret = bflb_ipc_setup_mbox(ipc, pdev->dev.of_node);
 	if (ret)
 		goto err_mbox;
+
+	spin_lock_init(&ipc->tx_lock);
+
 
 	ret = devm_request_irq(&pdev->dev, ipc->irq, bflb_ipc_irq_fn,
 			       IRQF_TRIGGER_HIGH | IRQF_NO_SUSPEND |
