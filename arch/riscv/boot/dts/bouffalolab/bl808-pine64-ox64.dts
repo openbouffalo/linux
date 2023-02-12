@@ -52,7 +52,7 @@
 };
 
 &ehci0 {
-	status = "okay";
+	status = "disabled";
 };
 
 &enet0 {
