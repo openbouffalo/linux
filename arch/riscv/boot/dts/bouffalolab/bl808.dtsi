@@ -67,6 +67,36 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
+		pinctrl: pinctrl@0x200008C4 {
+			compatible = "bflb,pinctrl";
+			//Last register is for gpio_cfg141 at 0x20000af8
+			reg = <0x200008C4 0x1000>;
+			//clocks = <&gpio_clk>;
+
+			gpio-controller;
+			#gpio-cells = <2>;
+			gpio-ranges = <&pinctrl 0 0 46>;
+			bflb,npins = <46>;
+
+			status = "disabled";
+
+			interrupt-controller;
+			#interrupt-cells = <2>;
+			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
+					BFLB_IPC_DEVICE_GPIO IRQ_TYPE_EDGE_RISING>;
+
+			sdh_pins: sdh-pins {
+				pins = "GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO4", "GPIO5";
+				function = "sdh";
+			};
+		};
+
+		seceng: seceng@0x20004000 {
+			compatible = "bflb,seceng";
+			reg = <0x20004000 0x1000>;
+			status = "disabled";
+		};
+
 		uart0: serial@30002000 {
 			compatible = "bflb,bl808-uart";
 			reg = <0x30002000 0x1000>;

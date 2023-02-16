@@ -39,6 +39,14 @@
 	};
 };
 
+&pinctrl {
+	status = "okay";
+};
+
+&seceng {
+	status = "okay";
+};
+
 &uart0 {
 	status = "okay";
 };
