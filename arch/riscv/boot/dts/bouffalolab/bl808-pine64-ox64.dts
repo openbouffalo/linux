@@ -9,7 +9,7 @@
 
 / {
 	model = "Pine64 Ox64";
-	compatible = "sipeed,m1s", "bflb,bl808";
+	compatible = "pine64,ox64", "bflb,bl808";
 
 	aliases {
 		serial0 = &uart0;

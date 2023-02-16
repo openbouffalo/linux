@@ -6,9 +6,11 @@
 /dts-v1/;
 
 #include "bl808.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/leds/common.h>
 
 / {
-	model = "Sipeed M1S";
+	model = "Sipeed M1s";
 	compatible = "sipeed,m1s", "bflb,bl808";
 
 	aliases {
@@ -17,7 +19,7 @@
 
 	chosen {
 		stdout-path = "serial0:2000000n8";
-		bootargs = "console=ttyS0,2000000 loglevel=8 earlycon=sbi root=/dev/mtdblock0 ro rootfstype=squashfs";
+		bootargs = "console=ttyS0,2000000 loglevel=8 earlycon=sbi root=/dev/mmcblk0p2 rootwait rootfstype=ext4";
 		linux,initrd-start = <0x0 0x52000000>;
 		linux,initrd-end = <0x0 0x52941784>;
 	};
@@ -35,13 +37,28 @@
 		bank-width = <4>;
 		#address-cells = <1>;
 		#size-cells = <1>;
-
-		rootfs@0 {
-			label = "rootfs";
-			reg = <0x00000 0x280000>;
-			read-only;
-		};
 	};
+
+	leds {
+        compatible = "gpio-leds";
+		
+        led {
+            gpios = <&pinctrl 8 GPIO_ACTIVE_LOW>;
+        };
+    };
+};
+
+&pinctrl {
+	status = "okay";
+
+	led {
+		pins = "GPIO8";
+		function = "gpio";
+	};
+};
+
+&seceng {
+	status = "okay";
 };
 
 &uart0 {
