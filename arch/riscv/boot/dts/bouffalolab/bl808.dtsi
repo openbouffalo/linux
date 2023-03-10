@@ -147,6 +147,12 @@
 			status = "disabled";
 		};
 
+		wdt: wdt@2000a500 {
+			compatible = "bflb,bl808-wdt";
+			reg = <0x2000a500 0x100>;
+			status = "disabled";
+			};
+
 		ipclic: mailbox@30005000 {
 			compatible = "bflb,bl808-ipc";
 			reg = <0x30005000 0x20>,
