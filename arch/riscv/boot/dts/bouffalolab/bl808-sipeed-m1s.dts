@@ -37,11 +37,15 @@
 		bank-width = <4>;
 		#address-cells = <1>;
 		#size-cells = <1>;
+		rootfs@0 {
+			label = "rootfs";
+			reg = <0x00000 0x280000>;
+			read-only;
+		};
 	};
 
 	leds {
         compatible = "gpio-leds";
-		
         led {
             gpios = <&pinctrl 8 GPIO_ACTIVE_LOW>;
         };
@@ -78,5 +82,9 @@
 };
 
 &enet0 {
+	status = "okay";
+};
+
+&rproc {
 	status = "okay";
 };

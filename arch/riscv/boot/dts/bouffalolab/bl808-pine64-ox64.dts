@@ -60,9 +60,13 @@
 };
 
 &ehci0 {
-	status = "okay";
+	status = "disabled";
 };
 
 &enet0 {
+	status = "okay";
+};
+
+&rproc {
 	status = "okay";
 };
