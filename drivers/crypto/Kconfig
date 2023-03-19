@@ -13,6 +13,17 @@ if CRYPTO_HW
 
 source "drivers/crypto/allwinner/Kconfig"
 
+config CRYPTO_DEV_BFLB_SECENG
+	tristate "Bouffalo Lab Secure Engine Driver"
+	depends on SOC_BOUFFALOLAB
+	select CRYPTO_RNG
+	help
+	  This driver provides support for the Random Number
+	  Generator hardware found on Bouffalo Lab BL808 SoCs.
+
+	  To compile this driver as a module, choose M here. The
+	  module will be called bflb-seceng. If unsure, say N.
+
 config CRYPTO_DEV_PADLOCK
 	tristate "Support for VIA PadLock ACE"
 	depends on X86 && !UML

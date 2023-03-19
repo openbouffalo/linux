@@ -53,16 +53,15 @@ struct bflb_ipc {
 	void __iomem *base[4];
 	struct irq_domain *irq_domain;
 	struct mbox_chan *chans;
-	struct bflb_ipc_chan_info *bflbchan;
-	struct mbox_controller mboxctlr;
+	struct bflb_ipc_chan_info *mchan;
+	struct mbox_controller mbox;
 	int num_chans;
 	int irq;
-	spinlock_t tx_lock
 };
 
-static inline struct bflb_ipc *to_bflb_ipc(struct mbox_controller *mboxctlr)
+static inline struct bflb_ipc *to_bflb_ipc(struct mbox_controller *mbox)
 {
-	return container_of(mboxctlr, struct bflb_ipc, mboxctlr);
+	return container_of(mbox, struct bflb_ipc, mbox);
 }
 
 static inline u32 bflb_ipc_get_hwirq(u16 source, u16 device)
@@ -71,7 +70,6 @@ static inline u32 bflb_ipc_get_hwirq(u16 source, u16 device)
 
 	return device;
 }
-
 
 #if 0
 static void bflb_ipc_dump_regs(struct bflb_ipc *ipc)
@@ -488,7 +486,6 @@ static int bflb_ipc_probe(struct platform_device *pdev)
 		goto err_mbox;
 
 	spin_lock_init(&ipc->tx_lock);
-
 
 	ret = devm_request_irq(&pdev->dev, ipc->irq, bflb_ipc_irq_fn,
 			       IRQF_TRIGGER_HIGH | IRQF_NO_SUSPEND |
