@@ -152,15 +152,17 @@ static const struct pinctrl_ops bflb_gpio_pinctrl_ops = {
 /* Pin multiplexer functions */
 
 //AH: Configure gpio modes and features
-static int bflb_gpio_pinmux_set(struct pinctrl_dev *pctldev, unsigned int func,
+static int bflb_gpio_pinmux_set(struct pinctrl_dev *pctldev, unsigned int selector,
 		unsigned int group)
 {
 	struct bflb_gpio_pinctrl *pctl = pinctrl_dev_get_drvdata(pctldev);
+	struct function_desc *desc = pinmux_generic_get_function(pctldev, selector);
+	int *func = desc->data;
 
 	bflb_gpio_set_reg(pctl, group, REG_GPIOx_FUNC_SEL,
-		FIELD_PREP(REG_GPIOx_FUNC_SEL, func));
+		FIELD_PREP(REG_GPIOx_FUNC_SEL, *func));
 
-	dev_dbg(pctl->dev, "Pin %u set to function %u", group, func);
+	dev_dbg(pctl->dev, "Pin %u set to function %u", group, *func);
 
 	return 0;
 }
@@ -593,11 +595,12 @@ static int bflb_gpio_pinctrl_probe(struct platform_device *pdev)
 {
 	struct bflb_gpio_pinctrl *pctl;
 	struct pinctrl_pin_desc *pins;
+	int *funcs;
 
 	unsigned int npins;
 	const char **pin_names;
 	unsigned int *pin_nums;
-	unsigned int i, nirqs = 0;
+	unsigned int i, j, nirqs = 0;
 	int res;
 
 	if (of_property_read_bool(pdev->dev.of_node, "interrupt-controller")) {
@@ -626,6 +629,8 @@ static int bflb_gpio_pinctrl_probe(struct platform_device *pdev)
 	pin_names = devm_kmalloc_array(&pdev->dev, npins, sizeof(pin_names[0]),
 			GFP_KERNEL);
 	pin_nums = devm_kmalloc_array(&pdev->dev, npins, sizeof(pin_nums[0]),
+			GFP_KERNEL);
+	funcs = devm_kmalloc_array(&pdev->dev, ARRAY_SIZE(pinmux_functions), sizeof(funcs[0]),
 			GFP_KERNEL);
 
 	if (!pins || !pin_names || !pin_nums)
@@ -674,10 +679,11 @@ static int bflb_gpio_pinctrl_probe(struct platform_device *pdev)
 			return dev_err_probe(pctl->dev, res, "Failed to register group");
 	}
 
-	for (i = 0; i < ARRAY_SIZE(pinmux_functions); ++i) {
+	for (i = 0, j = 0; i < ARRAY_SIZE(pinmux_functions); ++i) {
 		if (pinmux_functions[i]) {
+			funcs[j] = i;
 			res = pinmux_generic_add_function(pctl->pctldev,
-					pinmux_functions[i], pin_names, npins, pctl);
+					pinmux_functions[i], pin_names, npins, &funcs[j]);
 
 			dev_dbg(&pdev->dev, "Registered function %s with numeric %u",
 					pinmux_functions[i], i);
@@ -685,6 +691,7 @@ static int bflb_gpio_pinctrl_probe(struct platform_device *pdev)
 			if (res < 0)
 				return dev_err_probe(pctl->dev, res,
 						"Failed to register function.");
+			j++;
 		}
 	}
 
