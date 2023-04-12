@@ -45,6 +45,11 @@ struct bflb_gpio_pinctrl {
 	u8 irqgrps[];
 };
 
+struct bflb_func {
+	const char *name;
+	u8 func;
+};
+
 //Register indexing
 #define REG_GPIO(x)              (4 * (x))
 
@@ -78,33 +83,110 @@ struct bflb_gpio_pinctrl {
 #define BFLB_IRQ_MODE_ASYNC_LEVEL_LOW    10
 #define BFLB_IRQ_MODE_ASYNC_LEVEL_HIGH   11
 
-static const char * const pinmux_functions[] = {
+static struct bflb_func pinmux_functions[] = {
 	//AH: As taken from smaeul's pinctrl-bflb.c for U-Boot
-	[0]	    = "sdh",
-	[1]	    = "spi0",
-	[2]	    = "flash",
-	[3]	    = "i2s",
-	[4]	    = "pdm",
-	[5]	    = "i2c0",
-	[6]	    = "i2c1",
-	[7]	    = "uart",
-	[8]	    = "emac",
-	[9]	    = "cam",
-	[10]	= "analog",
-	[11]	= "gpio",
-	[16]	= "pwm0",
-	[17]	= "pwm1",
-	[18]	= "spi1",	// mm_spi
-	[19]	= "i2c2",	// mm_i2c0
-	[20]	= "i2c3",	// mm_i2c1
-	[21]	= "mm_uart",
-	[22]	= "dbi_b",
-	[23]	= "dbi_c",
-	[24]	= "dpi",
-	[25]	= "jtag_lp",
-	[26]	= "jtag_m0",
-	[27]	= "jtag_d0",
-	[31]	= "clock",
+	{
+		.name = "sdh",
+		.func = 0,
+	},
+	{
+		.name = "spi0",
+		.func = 1,
+	},
+	{
+		.name = "flash",
+		.func = 2,
+	},
+	{
+		.name = "i2s",
+		.func = 3,
+	},
+	{
+		.name = "pdm",
+		.func = 4,
+	},
+	{
+		.name = "i2c0",
+		.func = 5,
+	},
+	{
+		.name = "i3c0",
+		.func = 6,
+	},
+	{
+		.name = "uart",
+		.func = 7,
+	},
+	{
+		.name = "emac",
+		.func = 8,
+	},
+	{
+		.name = "cam",
+		.func = 9,
+	},
+	{
+		.name = "analog",
+		.func = 10,
+	},
+	{
+		.name = "gpio",
+		.func = 11,
+	},
+	// hole
+	{
+		.name = "pwm0",
+		.func = 16,
+	},
+	{
+		.name = "pwm1",
+		.func = 17,
+	},
+	{
+		.name = "spi1", // mm_spi
+		.func = 18,
+	},
+	{
+		.name = "i2c2", // mm_i2c0
+		.func = 19,
+	},
+	{
+		.name = "i3c2", // mm_i2c1
+		.func = 20,
+	},
+	{
+		.name = "mm_uart",
+		.func = 21,
+	},
+	{
+		.name = "dbi_b",
+		.func = 22,
+	},
+	{
+		.name = "dbi_c",
+		.func = 23,
+	},
+	{
+		.name = "dpi",
+		.func = 24,
+	},
+	{
+		.name = "jtag_lp",
+		.func = 25,
+	},
+	{
+		.name = "jtag_m0",
+		.func = 26,
+	},
+	{
+		.name = "jtag_d0",
+		.func = 27,
+	},
+	// hole
+	{
+		.name = "clock",
+		.func = 31,
+	},
 };
 
 struct regmap_config regmap_config = {
@@ -152,15 +234,28 @@ static const struct pinctrl_ops bflb_gpio_pinctrl_ops = {
 /* Pin multiplexer functions */
 
 //AH: Configure gpio modes and features
-static int bflb_gpio_pinmux_set(struct pinctrl_dev *pctldev, unsigned int func,
+static int bflb_gpio_pinmux_set(struct pinctrl_dev *pctldev, unsigned int selector,
 		unsigned int group)
 {
+	struct bflb_func *func;
 	struct bflb_gpio_pinctrl *pctl = pinctrl_dev_get_drvdata(pctldev);
+	struct function_desc *desc = pinmux_generic_get_function(pctldev, selector);
+
+	if (!desc) {
+		dev_err(pctl->dev, "No descriptor for pin %d!\n", selector);
+		return -EINVAL;
+	}
+
+	func = desc->data;
+	if (!func) {
+		dev_err(pctl->dev, "No data for pin %d!\n", selector);
+		return -EINVAL;
+	}
 
 	bflb_gpio_set_reg(pctl, group, REG_GPIOx_FUNC_SEL,
-		FIELD_PREP(REG_GPIOx_FUNC_SEL, func));
+		FIELD_PREP(REG_GPIOx_FUNC_SEL, func->func));
 
-	dev_dbg(pctl->dev, "Pin %u set to function %u", group, func);
+	dev_dbg(pctl->dev, "Pin %u set to function %u", group, func->func);
 
 	return 0;
 }
@@ -675,17 +770,15 @@ static int bflb_gpio_pinctrl_probe(struct platform_device *pdev)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(pinmux_functions); ++i) {
-		if (pinmux_functions[i]) {
-			res = pinmux_generic_add_function(pctl->pctldev,
-					pinmux_functions[i], pin_names, npins, pctl);
+		res = pinmux_generic_add_function(pctl->pctldev,
+				pinmux_functions[i].name, pin_names, npins, &pinmux_functions[i]);
 
-			dev_dbg(&pdev->dev, "Registered function %s with numeric %u",
-					pinmux_functions[i], i);
+		dev_dbg(&pdev->dev, "Registered function %s with numeric %u",
+				pinmux_functions[i].name, pinmux_functions[i].func);
 
-			if (res < 0)
-				return dev_err_probe(pctl->dev, res,
-						"Failed to register function.");
-		}
+		if (res < 0)
+			return dev_err_probe(pctl->dev, res,
+					"Failed to register function.");
 	}
 
 	dev_info(&pdev->dev, "Bouffalo Lab pinctrl+GPIO(+interrupt) controller - "
