@@ -348,7 +348,7 @@ static void bflb_gpio_irq_ack(struct irq_data *data)
 
 //AH: Find the correct value for the type of interrupts we want to receive
 //for a GPIO
-static unsigned int bflb_gpio_irq_type(unsigned int type)
+static int bflb_gpio_irq_type(unsigned int type)
 {
 	unsigned int selected;
 
@@ -374,10 +374,8 @@ static unsigned int bflb_gpio_irq_type(unsigned int type)
 		selected = BFLB_IRQ_MODE_SYNC_LEVEL_LOW;
 		break;
 
-	//No "off" available on BL808, set to default IRQ_TYPE_EDGE_FALLING and
-	//then we'll need to mask
 	default:
-		selected = BFLB_IRQ_MODE_SYNC_EDGE_FALLING;
+		selected = -EINVAL;
 		break;
 	}
 
@@ -404,7 +402,14 @@ static void bflb_gpio_irq_unmask(struct irq_data *data)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
 	struct bflb_gpio_pinctrl *pctl = gpiochip_get_data(gc);
-	unsigned int irqtype = bflb_gpio_irq_type(irqd_get_trigger_type(data));
+	int irqtype = bflb_gpio_irq_type(irqd_get_trigger_type(data));
+
+	if (irqtype < 0) {
+		// this should never happen as this would be prevented by
+		// bflb_gpio_irq_set_type()
+		dev_err(pctl->dev, "irqtype of %lu negative!", data->hwirq);
+		return;
+	}
 
 	gpiochip_enable_irq(gc, data->hwirq);
 	set_bit(data->hwirq, pctl->irqsunmasked);
@@ -441,10 +446,10 @@ static int bflb_gpio_irq_set_type(struct irq_data *data, unsigned int type)
 	struct bflb_gpio_pinctrl *pctl =
 			gpiochip_get_data(irq_data_get_irq_chip_data(data));
 
-	unsigned int irqtype = bflb_gpio_irq_type(type);
+	int irqtype = bflb_gpio_irq_type(type);
 
-	if (irqtype == 0)
-		return -EINVAL;
+	if (irqtype < 0)
+		return irqtype;
 
 	bflb_gpio_set_reg(pctl, data->hwirq, REG_GPIOx_INT_MODE_SET,
 		FIELD_PREP(REG_GPIOx_INT_MODE_SET, irqtype));
