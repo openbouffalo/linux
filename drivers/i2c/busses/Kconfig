@@ -1221,6 +1221,16 @@ config I2C_RCAR
 	  This driver can also be built as a module.  If so, the module
 	  will be called i2c-rcar.
 
+config I2C_BL808
+		tristate "Bouffalo Lab BL808 I2C driver"
+		depends on SOC_BOUFFALOLAB
+		help
+		  This driver provides support for the I2C bus
+		  hardware found on Bouffalo Lab BL808 SoCs.
+
+		  To compile this driver as a module, choose M here. The
+	  	  module will be called i2c-bl808. If unsure, say N.
+
 comment "External I2C/SMBus adapter drivers"
 
 config I2C_DIOLAN_U2C
