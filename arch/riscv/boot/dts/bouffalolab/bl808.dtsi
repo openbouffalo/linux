@@ -52,6 +52,20 @@
 		#clock-cells = <0>;
 	};
 
+	rc32m: rc32m-clk {
+		compatible = "fixed-clock";
+		clock-frequency = <32000000>;
+		clock-output-names = "rc32m";
+		#clock-cells = <0>;
+	};
+
+	mm_b: mm_bclk1x {
+		compatible = "fixed-clock";
+		clock-frequency = <160000000>;
+		clock-output-names = "mm_b";
+		#clock-cells = <0>;
+	};
+
 	enet: enet-clk {
 		compatible = "fixed-clock";
 		clock-frequency = <50000000>;
@@ -94,6 +108,48 @@
 		seceng: seceng@0x20004000 {
 			compatible = "bflb,seceng";
 			reg = <0x20004000 0x1000>;
+			status = "disabled";
+		};
+
+		i2c0: i2c@2000A300 {
+			compatible = "bflb,bl808-i2c";
+			reg = <0x2000A300 0x0100>;
+			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
+								BFLB_IPC_DEVICE_I2C0
+								IRQ_TYPE_EDGE_RISING>;
+			mboxes = <&ipclic BFLB_IPC_SOURCE_M0 BFLB_IPC_DEVICE_I2C0>;
+			clocks = <&rc32m>;
+			clock-frequency = <400000>;
+			status = "disabled";
+		};
+
+		i2c1: i2c@2000A900 {
+			compatible = "bflb,bl808-i2c";
+			reg = <0x2000A900 0x0100>;
+			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
+								BFLB_IPC_DEVICE_I2C1
+								IRQ_TYPE_EDGE_RISING>;
+			mboxes = <&ipclic BFLB_IPC_SOURCE_M0 BFLB_IPC_DEVICE_I2C1>;
+			clocks = <&rc32m>;
+			clock-frequency = <400000>;
+			status = "disabled";
+		};
+
+		i2c2: i2c@30003000 {
+			compatible = "bflb,bl808-i2c";
+			reg = <0x30003000 0x1000>;
+			interrupts = <21 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&mm_b>;
+			clock-frequency = <400000>;
+			status = "disabled";
+		};
+
+		i2c3: i2c@30004000 {
+			compatible = "bflb,bl808-i2c";
+			reg = <0x30004000 0x1000>;
+			interrupts = <22 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&mm_b>;
+			clock-frequency = <400000>;
 			status = "disabled";
 		};
 

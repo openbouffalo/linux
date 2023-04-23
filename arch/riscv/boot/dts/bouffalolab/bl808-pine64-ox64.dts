@@ -41,10 +41,22 @@
 
 &pinctrl {
 	status = "okay";
+
+	i2c_2_pins: i2c-pins {
+		pins = "GPIO6", "GPIO7";
+		function = "i2c2";
+	};
 };
 
 &seceng {
 	status = "okay";
+};
+
+&i2c2 {
+	status = "okay";
+
+	pinctrl-0 = <&i2c_2_pins>;
+	pinctrl-names = "default";
 };
 
 &uart0 {

@@ -16,5 +16,7 @@
 #define BFLB_IPC_DEVICE_USB		    2
 #define BFLB_IPC_DEVICE_EMAC		3
 #define BFLB_IPC_DEVICE_GPIO        4
+#define BFLB_IPC_DEVICE_I2C0        5
+#define BFLB_IPC_DEVICE_I2C1        6
 
 #endif
