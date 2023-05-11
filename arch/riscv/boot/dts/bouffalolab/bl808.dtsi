@@ -127,6 +127,12 @@
 			status = "disabled";
 		};
 
+		usb_phy: usb-phy@2000e500 {
+			compatible = "bflb,bl808-usb-phy";
+			reg = <0x2000e500 0x8>;
+			#phy-cells = <0>;
+		};
+
 		ehci0: usb@20072000 {
 			compatible = "generic-ehci";
 			reg = <0x20072000 0x1000>;
