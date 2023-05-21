@@ -82,8 +82,7 @@
 
 			interrupt-controller;
 			#interrupt-cells = <2>;
-			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
-					BFLB_IPC_DEVICE_GPIO IRQ_TYPE_EDGE_RISING>;
+			interrupts-extended = <&m0ic 44>;
 
 			sdh_pins: sdh-pins {
 				pins = "GPIO0", "GPIO1", "GPIO2", "GPIO3", "GPIO4", "GPIO5";
@@ -98,6 +97,7 @@
 		};
 
 		uart0: serial@30002000 {
+			/*Maps to hardware UART 3*/
 			compatible = "bflb,bl808-uart";
 			reg = <0x30002000 0x1000>;
 			interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
@@ -106,12 +106,10 @@
 		};
 		
 		uart1: serial@0x2000AA00 {
+			/*Maps to hardware UART 2*/
 			compatible = "bflb,bl808-uart";
 			reg = <0x2000AA00 0x0100>;
-			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
-								BFLB_IPC_DEVICE_UART2
-								IRQ_TYPE_EDGE_RISING>;
-			mboxes = <&ipclic BFLB_IPC_SOURCE_M0 BFLB_IPC_DEVICE_UART2>;
+			interrupts-extended = <&m0ic 30>;
 			clocks = <&xtal>;
 			status = "disabled";
 		};
@@ -119,10 +117,7 @@
 		sdhci0: sdhci@20060000 {
 			compatible = "bflb,bl808-sdhci";
 			reg = <0x20060000 0x100>;
-			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
-						       BFLB_IPC_DEVICE_SDHCI
-						       IRQ_TYPE_EDGE_RISING>;
-			mboxes = <&ipclic BFLB_IPC_SOURCE_M0 BFLB_IPC_DEVICE_SDHCI>;
+			interrupts-extended = <&m0ic 17>;
 			clocks = <&sdh>;
 			status = "disabled";
 		};
@@ -130,9 +125,7 @@
 		ehci0: usb@20072000 {
 			compatible = "generic-ehci";
 			reg = <0x20072000 0x1000>;
-			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
-						       BFLB_IPC_DEVICE_USB
-						       IRQ_TYPE_EDGE_RISING>;
+			interrupts-extended = <&m0ic 21>;
 			clocks = <&xtal>;
 			status = "disabled";
 		};
@@ -140,9 +133,7 @@
 		enet0: emac@20070000 {
 			compatible = "opencores,ethoc";
 			reg = <0x20070000 0x1000>;
-			interrupts-extended = <&ipclic BFLB_IPC_SOURCE_M0
-						       BFLB_IPC_DEVICE_EMAC
-						       IRQ_TYPE_EDGE_RISING>;
+			interrupts-extended = <&m0ic 24>;
 			clocks = <&enet>;
 			status = "disabled";
 		};
@@ -160,6 +151,15 @@
 			status = "disabled";
 		};
 
+		m0ic: mcu-interrupt-controller@20000050 {
+			compatible = "bflb,bl808-mcu-irq";
+			reg = <0x20000050 0x18>;
+			interrupts = <81 IRQ_TYPE_LEVEL_HIGH>;
+			interrupt-controller;
+			#address-cells = <0>;
+			#interrupt-cells = <1>;
+		};
+
 		plic: interrupt-controller@e0000000 {
 			compatible = "thead,c900-plic";
 			reg = <0xe0000000 0x4000000>;
@@ -168,7 +168,7 @@
 			interrupt-controller;
 			#address-cells = <0>;
 			#interrupt-cells = <2>;
-			riscv,ndev = <64>;
+			riscv,ndev = <82>;
 		};
 
 		clint: timer@e4000000 {
