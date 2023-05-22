@@ -3637,6 +3637,56 @@ S:	Maintained
 F:	Documentation/devicetree/bindings/iio/accel/bosch,bma400.yaml
 F:	drivers/iio/accel/bma400*
 
+BOUFFALOLAB UART DRIVER
+M:	Jisheng Zhang <jszhang@kernel.org>
+S:	Maintained
+F:	Documentation/devicetree/bindings/serial/bouffalolab,uart.yaml
+F:	drivers/tty/serial/bflb_uart.c
+
+BPF [GENERAL] (Safe Dynamic Programs and Tools)
+M:	Alexei Starovoitov <ast@kernel.org>
+M:	Daniel Borkmann <daniel@iogearbox.net>
+M:	Andrii Nakryiko <andrii@kernel.org>
+R:	Martin KaFai Lau <martin.lau@linux.dev>
+R:	Song Liu <song@kernel.org>
+R:	Yonghong Song <yhs@fb.com>
+R:	John Fastabend <john.fastabend@gmail.com>
+R:	KP Singh <kpsingh@kernel.org>
+R:	Stanislav Fomichev <sdf@google.com>
+R:	Hao Luo <haoluo@google.com>
+R:	Jiri Olsa <jolsa@kernel.org>
+L:	bpf@vger.kernel.org
+S:	Supported
+W:	https://bpf.io/
+Q:	https://patchwork.kernel.org/project/netdevbpf/list/?delegate=121173
+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+F:	Documentation/bpf/
+F:	Documentation/networking/filter.rst
+F:	Documentation/userspace-api/ebpf/
+F:	arch/*/net/*
+F:	include/linux/bpf*
+F:	include/linux/btf*
+F:	include/linux/filter.h
+F:	include/trace/events/xdp.h
+F:	include/uapi/linux/bpf*
+F:	include/uapi/linux/btf*
+F:	include/uapi/linux/filter.h
+F:	kernel/bpf/
+F:	kernel/trace/bpf_trace.c
+F:	lib/test_bpf.c
+F:	net/bpf/
+F:	net/core/filter.c
+F:	net/sched/act_bpf.c
+F:	net/sched/cls_bpf.c
+F:	samples/bpf/
+F:	scripts/bpf_doc.py
+F:	scripts/pahole-flags.sh
+F:	scripts/pahole-version.sh
+F:	tools/bpf/
+F:	tools/lib/bpf/
+F:	tools/testing/selftests/bpf/
+
 BPF JIT for ARM
 M:	Shubham Bansal <illusionist.neo@gmail.com>
 L:	bpf@vger.kernel.org
